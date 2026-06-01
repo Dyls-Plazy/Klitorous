@@ -106,7 +106,9 @@ class FileStoreHook(Hook):
             os.makedirs(directory, exist_ok=True)
 
             async with aiofiles.open(await self.get_path_directory(path, "value.json"), 'w') as f:
-                return await f.write(json.dumps(value))
+                await f.write(json.dumps(value))
+        
+        return value
         
     async def list_path_subpaths(self, path:str, cached=False) -> iter:
         directory = await self.get_path_directory(path)
