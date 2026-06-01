@@ -28,6 +28,7 @@ import os
 # Node
 # =========================
 
+
 class Node:
     """
     Represents a singular node.
@@ -137,6 +138,7 @@ class Node:
 # Hook Interface
 # =========================
 
+
 class Hook:
     """
     Abstract storage backend interface.
@@ -163,6 +165,7 @@ class Hook:
 # =========================
 # File Store Hook
 # =========================
+
 
 class FileStoreHook(Hook):
     """
@@ -243,6 +246,7 @@ class FileStoreHook(Hook):
 # =========================
 # KelDB Root
 # =========================
+
 
 class KelDB(Node):
     """
