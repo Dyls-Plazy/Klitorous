@@ -17,16 +17,16 @@ class Node():
         self.path = None
 
     async def get_value(self) -> Any:
-        return await self.root.hook.get_path_value(self.path)
+        return await self.root.hook.get_path_value(self.path, cached=self.root.cache_enabled)
     
     async def set_value(self, value:Any) -> None:
-        await self.root.hook.set_path_value(self.path, value)
+        await self.root.hook.set_path_value(self.path, value, cached=self.root.cache_enabled)
 
     async def list_subnodes(self) -> iter:
         if not await self.exists():
             return
 
-        async for subnode_name in self.root.hook.list_path_subpaths(self.path):
+        async for subnode_name in self.root.hook.list_path_subpaths(self.path, cached=self.root.cache_enabled):
             subnode = Node()
 
             subnode.root = self.root
@@ -47,13 +47,35 @@ class Node():
         return subnode
     
     async def exists(self) -> bool:
-        return await self.root.hook.check_path_exists(self.path)
+        return await self.root.hook.check_path_exists(self.path, cached=self.root.cache_enabled)
     
     async def delete(self) -> None:
         if await self.exists():
-            await self.root.hook.delete_path(self.path)
+            await self.root.hook.delete_path(self.path, cached=self.root.cache_enabled)
 
 class Hook():
+    async def get_path_value(self, path:str, cached=False) -> Any:
+        raise NotImplementedError
+    
+    async def set_path_value(self, path:str, value:Any, cached=False) -> Any:
+        raise NotImplementedError
+    
+    async def list_path_subpaths(self, path:str, cached=False) -> iter:
+        raise NotImplementedError
+
+    async def check_path_exists(self, path:str, cached=False) -> bool:
+        raise NotImplementedError
+    
+    async def delete_path(self, path:str) -> None:
+        raise NotImplementedError
+    
+class MemoryHook():
+    def __init__(self):
+        self.locks = []
+
+        for _ in range(100):
+            self.locks.append(asyncio.Lock())
+
     async def get_path_value(self, path:str, cached=False) -> Any:
         raise NotImplementedError
     
@@ -140,3 +162,5 @@ class KelDB(Node):
         self.path = "/"
 
         self.hook = hook
+
+        self.cache_enabled = True
