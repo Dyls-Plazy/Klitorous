@@ -10,6 +10,7 @@ a tree of nodes with pluggable storage backends.
 
    quickstart
    nodes
+   hooks
    best_practices
 
 .. toctree::
