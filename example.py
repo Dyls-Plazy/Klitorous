@@ -22,13 +22,17 @@ async def main():
 
     await foo.delete() # Delete a subnode (do note that this also recursively deletes any subnodes under it)
 
-    async for subnode in database.list_subnodes(): # Iterate over subnodes
-        print(subnode.path)
+    direct_reference = await database.get_node_from_path("/this/can/be/any/path/")
 
-    print(await database.get_node_from_path("/this/can/be/any/path/"))
+    print(direct_reference)
     print(await bar.get_subnode("/this/can/be/any/path/"))
     print(database)
 
+    await direct_reference.set_value(True)
     await database.set_value("Even the database itself is technically a node!")
+
+    async for subnode in database.list_subnodes(recursive=True, include_self=True): # Iterate over subnodes
+        print(subnode.path)
+
 
 asyncio.run(main())

@@ -76,9 +76,13 @@ class Node:
             cached=self.root.cache_enabled,
         )
 
-    async def list_subnodes(self) -> AsyncIterator["Node"]:
+    async def list_subnodes(self, recursive: bool=False, include_self: bool=False) -> AsyncIterator["Node"]:
         """
         Iterate over subnodes.
+
+        Arguments:
+            recursive (bool): Whether to recursively iterate over the entire tree.
+            include_self (bool): Whether to include itself as a node in the list (if the node itself actually exists)
 
         Yields:
             Node: Subnode objects.
@@ -86,16 +90,29 @@ class Node:
         if not await self.exists():
             return
 
+        if include_self:
+            yield self
+
+        next_list = []
+
         async for subnode_name in self.root.hook.list_path_subpaths(
             self.path,
             cached=self.root.cache_enabled,
         ):
+
             subnode = Node()
             subnode.root = self.root
             subnode.parent = self
             subnode.name = subnode_name
-            subnode.path = self.path + f"{subnode_name}/"
+            subnode.path = self.path + f"{subnode_name}/"            
             yield subnode
+
+            if recursive:
+                next_list.append(subnode)
+
+        for subnode in next_list:
+            async for subsubnode in subnode.list_subnodes(recursive=True):
+                yield subsubnode
 
     async def get_subnode(self, subnode_name: str) -> "Node":
         """
