@@ -29,6 +29,7 @@ import os
 # Utility functions
 # =========================
 
+
 async def _readlines(target: IO[bytes]) -> AsyncIterator[bytes]:
     while True:
         buffer = target.read(65535)
@@ -38,7 +39,7 @@ async def _readlines(target: IO[bytes]) -> AsyncIterator[bytes]:
 
         item = b""
 
-        for char in [buffer[i:i+1] for i in range(len(buffer))]:
+        for char in [buffer[i : i + 1] for i in range(len(buffer))]:
             if char == b"\n":
                 yield item
                 item = b""
@@ -428,7 +429,7 @@ class KelDB(Node):
             target.write(b"\n")
             target.write(json.dumps(await subnode.get_value()))
             target.write(b"\n")
-    
+
     async def load_database_dump(self, target: IO[bytes]) -> None:
         """
         Load a .keldb file into the current database.
@@ -451,7 +452,9 @@ class KelDB(Node):
                 version = data
 
                 if version > 1:
-                    raise RuntimeError(f"This file is version {version}, while this version can only handle files up to 1.0.")
+                    raise RuntimeError(
+                        f"This file is version {version}, while this version can only handle files up to 1.0."
+                    )
 
                 continue
             if header is placeholder_value:
