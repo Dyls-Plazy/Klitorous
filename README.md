@@ -1,6 +1,7 @@
 
 # KelDB
-[![Latest PyPI package version](https://badge.fury.io/py/keldb.svg)](https://pypi.org/project/keldb)
+[![Latest PyPI package version](https://badge.fury.io/py/keldb.svg)](https://pypi.org/project/keldb) [![Latest Read The Docs](https://readthedocs.org/projects/keldb/badge/?version=latest)](https://keldb.readthedocs.io/en/latest/)
+
 KelDB is a simple node-based database for asyncio applications.
 ## Dynamics
 KelDB is organised into **nodes**. A node is a container that can hold a value and/or other **subnodes**. The database itself is the root node, and every piece of data is a subnode of it.
