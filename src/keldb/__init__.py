@@ -263,3 +263,20 @@ class KelDB(Node):
         self.path = "/"
         self.hook = hook
         self.cache_enabled = True
+
+    async def get_node_from_path(self, path: str) -> Node:
+        """
+        Get a reference to a node from a path.
+
+        Args:
+            path (str): Path of node.
+
+        Returns:
+            Node: Node reference.
+        """
+        node = self
+
+        for node_name in (x for x in path.split("/") if x):
+            await node.get_subnode(node_name)
+        
+        return node
