@@ -9,7 +9,7 @@ KelDB is organised into **nodes**. A node is a container that can hold a value a
 ## Installation
 Install from PyPi:
 
-    pip install keldb
+    pip install -U keldb
 
 Or install from source
 
