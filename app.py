@@ -13,7 +13,11 @@ async def main():
     subnode = database
 
     for i in range(25):
+        print(await subnode.exists())
+        
         await subnode.set_value(i)
+
+        print(await subnode.exists())
 
         subnode = await subnode.get_subnode(secrets.token_hex(1))
 

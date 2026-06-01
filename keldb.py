@@ -40,6 +40,9 @@ class Node():
         subnode.path = self.path + f"{subnode_name}/"
 
         return subnode
+    
+    async def exists(self) -> bool:
+        return await self.root.hook.check_path_exists(self.path)
 
 class Hook():
     async def get_path_value(self, path:str, cached=False) -> Any:
@@ -49,6 +52,9 @@ class Hook():
         raise NotImplementedError
     
     async def list_path_subpaths(self, path:str, cached=False) -> iter:
+        raise NotImplementedError
+
+    async def check_path_exists(self, path:str, cached=False) -> bool:
         raise NotImplementedError
 
 class FileStoreHook(Hook):
@@ -87,6 +93,9 @@ class FileStoreHook(Hook):
                     except:continue
 
                     yield entry_name
+
+    async def check_path_exists(self, path:str, cached=False) -> bool:
+        return os.path.isdir(await self.get_path_directory(path))
 
 class KelDB(Node):
     def __init__(self, hook:Hook):
