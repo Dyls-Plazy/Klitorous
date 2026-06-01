@@ -2,7 +2,9 @@ from typing import Any
 from enum import Enum
 import aiofiles
 import asyncio
+import pathlib
 import base64
+import shutil
 import json
 import os
 
@@ -21,6 +23,9 @@ class Node():
         await self.root.hook.set_path_value(self.path, value)
 
     async def list_subnodes(self) -> iter:
+        if not await self.exists():
+            return
+
         async for subnode_name in self.root.hook.list_path_subpaths(self.path):
             subnode = Node()
 
@@ -43,6 +48,10 @@ class Node():
     
     async def exists(self) -> bool:
         return await self.root.hook.check_path_exists(self.path)
+    
+    async def delete(self) -> None:
+        if await self.exists():
+            await self.root.hook.delete_path(self.path)
 
 class Hook():
     async def get_path_value(self, path:str, cached=False) -> Any:
@@ -59,7 +68,7 @@ class Hook():
 
 class FileStoreHook(Hook):
     def __init__(self, dir:str):
-        self.dir = dir
+        self.dir = pathlib.Path(dir).absolute()
 
         self.store = {}
     
@@ -96,6 +105,9 @@ class FileStoreHook(Hook):
 
     async def check_path_exists(self, path:str, cached=False) -> bool:
         return os.path.isdir(await self.get_path_directory(path))
+    
+    async def delete_path(self, path:str, cached=False) -> bool:
+        return shutil.rmtree(await self.get_path_directory(path))
 
 class KelDB(Node):
     def __init__(self, hook:Hook):
