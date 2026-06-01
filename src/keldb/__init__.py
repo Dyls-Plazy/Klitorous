@@ -188,9 +188,9 @@ class FileStoreHook(Hook):
     Each node is stored as a directory. The value is stored in value.json inside the directory.
     """
 
-    def __init__(self, dir: str) -> None:
+    def __init__(self, dir: str, locks_count: int = 100) -> None:
         self.dir = pathlib.Path(dir).absolute()
-        self.locks = [asyncio.Lock() for _ in range(100)]
+        self.locks = [asyncio.Lock() for _ in range(locks_count)]
 
     def __repr__(self):
         return f"FileStoreHook(dir='{self.dir}')"
