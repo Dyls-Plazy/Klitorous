@@ -65,6 +65,9 @@ class Hook():
 
     async def check_path_exists(self, path:str, cached=False) -> bool:
         raise NotImplementedError
+    
+    async def delete_path(self, path:str) -> None:
+        raise NotImplementedError
 
 class FileStoreHook(Hook):
     def __init__(self, dir:str):
@@ -106,8 +109,8 @@ class FileStoreHook(Hook):
     async def check_path_exists(self, path:str, cached=False) -> bool:
         return os.path.isdir(await self.get_path_directory(path))
     
-    async def delete_path(self, path:str, cached=False) -> bool:
-        return shutil.rmtree(await self.get_path_directory(path))
+    async def delete_path(self, path:str, cached=False) -> None:
+        shutil.rmtree(await self.get_path_directory(path))
 
 class KelDB(Node):
     def __init__(self, hook:Hook):
