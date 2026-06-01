@@ -1,7 +1,7 @@
-keldb module
-============
+Welcome to the KelDB documentation!
+================================
 
-.. automodule:: keldb
-   :members:
-   :show-inheritance:
-   :undoc-members:
+.. toctree::
+   :maxdepth: 2
+
+   api
