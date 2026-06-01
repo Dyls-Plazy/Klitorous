@@ -1,6 +1,6 @@
 
 # KelDB
-[![Latest PyPI package version](https://badge.fury.io/py/keldb.svg)](https://pypi.org/project/keldb) [![Latest Read The Docs](https://readthedocs.org/projects/keldb/badge/?version=latest)](https://keldb.readthedocs.io/en/latest/)
+[![Latest PyPI package version](https://img.shields.io/pypi/v/keldb.svg)](https://pypi.org/project/keldb) [![Latest Read The Docs](https://readthedocs.org/projects/keldb/badge/?version=latest)](https://keldb.readthedocs.io/en/latest/)
 
 KelDB is a simple node-based database for asyncio applications.
 ## Dynamics
