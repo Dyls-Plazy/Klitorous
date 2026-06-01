@@ -74,6 +74,14 @@ class FileStoreHook(Hook):
         self.dir = pathlib.Path(dir).absolute()
 
         self.store = {}
+
+        self.locks = []
+
+        for _ in range(100):
+            self.locks.append(asyncio.Lock())
+
+    async def get_directory_lock(self, directory:str) -> asyncio.Lock:
+        return self.locks[hash(directory)%len(self.locks)]
     
     async def get_path_directory(self, path:str, file:str="") -> str:
         parts = (self.dir,) + tuple(base64.urlsafe_b64encode(x.encode()).decode() for x in path.split("/") if x != "") + (file,)
@@ -84,33 +92,46 @@ class FileStoreHook(Hook):
         directory = await self.get_path_directory(path, "value.json")
 
         if not cached:
-            if not os.path.isfile(directory):
-                return None
+            async with (await self.get_directory_lock(await self.get_path_directory(path))):
+                if not os.path.isfile(directory):
+                    return None
 
-            async with aiofiles.open(directory, 'r') as f:
-                return json.loads(await f.read())
+                async with aiofiles.open(directory, 'r') as f:
+                    return json.loads(await f.read())
             
     async def set_path_value(self, path:str, value:Any, cached=False) -> None:
-        os.makedirs(await self.get_path_directory(path), exist_ok=True)
+        directory = await self.get_path_directory(path)
 
-        async with aiofiles.open(await self.get_path_directory(path, "value.json"), 'w') as f:
-            return await f.write(json.dumps(value))
+        async with (await self.get_directory_lock(directory)):
+            os.makedirs(directory, exist_ok=True)
+
+            async with aiofiles.open(await self.get_path_directory(path, "value.json"), 'w') as f:
+                return await f.write(json.dumps(value))
         
     async def list_path_subpaths(self, path:str, cached=False) -> iter:
-        with os.scandir(await self.get_path_directory(path)) as entries:
-            for entry in entries:
-                if entry.is_dir():
-                    try:
-                        entry_name = base64.urlsafe_b64decode(entry.name.encode()).decode()
-                    except:continue
+        directory = await self.get_path_directory(path)
 
-                    yield entry_name
+        async with (await self.get_directory_lock(directory)):
+            with os.scandir(directory) as entries:
+                for entry in entries:
+                    if entry.is_dir():
+                        try:
+                            entry_name = base64.urlsafe_b64decode(entry.name.encode()).decode()
+                        except:continue
+
+                        yield entry_name
 
     async def check_path_exists(self, path:str, cached=False) -> bool:
-        return os.path.isdir(await self.get_path_directory(path))
+        directory = await self.get_path_directory(path)
+
+        async with (await self.get_directory_lock(directory)):
+            return os.path.isdir(directory)
     
     async def delete_path(self, path:str, cached=False) -> None:
-        shutil.rmtree(await self.get_path_directory(path))
+        directory = await self.get_path_directory(path)
+
+        async with (await self.get_directory_lock(directory)):
+            shutil.rmtree(directory)
 
 class KelDB(Node):
     def __init__(self, hook:Hook):
