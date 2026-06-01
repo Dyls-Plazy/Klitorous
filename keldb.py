@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Union
 from enum import Enum
 import aiofiles
 import asyncio
@@ -73,8 +73,6 @@ class FileStoreHook(Hook):
     def __init__(self, dir:str):
         self.dir = pathlib.Path(dir).absolute()
 
-        self.store = {}
-
         self.locks = []
 
         for _ in range(100):
@@ -91,13 +89,12 @@ class FileStoreHook(Hook):
     async def get_path_value(self, path:str, cached=False) -> Any:
         directory = await self.get_path_directory(path, "value.json")
 
-        if not cached:
-            async with (await self.get_directory_lock(await self.get_path_directory(path))):
-                if not os.path.isfile(directory):
-                    return None
+        async with (await self.get_directory_lock(await self.get_path_directory(path))):
+            if not os.path.isfile(directory):
+                return None
 
-                async with aiofiles.open(directory, 'r') as f:
-                    return json.loads(await f.read())
+            async with aiofiles.open(directory, 'r') as f:
+                return json.loads(await f.read())
             
     async def set_path_value(self, path:str, value:Any, cached=False) -> None:
         directory = await self.get_path_directory(path)
