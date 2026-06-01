@@ -10,12 +10,6 @@ Core Components:
     - Hook: Backend abstraction interface for custom setups.
     - FileStoreHook: Filesystem-backed implementation.
     - KelDB: Root database node.
-
-Example:
-    db = KelDB(FileStoreHook("./data"))
-    node = await db.get_subnode("users")
-    await node.set_value({"count": 1})
-    value = await node.get_value()
 """
 
 from __future__ import annotations
