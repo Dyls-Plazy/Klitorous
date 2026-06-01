@@ -30,6 +30,16 @@ class Node():
             subnode.path = self.path + f"{subnode_name}/"
 
             yield subnode
+    
+    async def get_subnode(self, subnode_name:str):
+        subnode = Node()
+
+        subnode.root = self.root
+        subnode.parent = self
+        subnode.name = subnode_name
+        subnode.path = self.path + f"{subnode_name}/"
+
+        return subnode
 
 class Hook():
     async def get_path_value(self, path:str, cached=False) -> Any:
@@ -53,8 +63,13 @@ class FileStoreHook(Hook):
         return os.path.join(*parts)
 
     async def get_path_value(self, path:str, cached=False) -> Any:
+        directory = await self.get_path_directory(path, "value.json")
+
         if not cached:
-            async with aiofiles.open(await self.get_path_directory(path, "value.json"), 'r') as f:
+            if not os.path.isfile(directory):
+                return None
+
+            async with aiofiles.open(directory, 'r') as f:
                 return json.loads(await f.read())
             
     async def set_path_value(self, path:str, value:Any, cached=False) -> None:
