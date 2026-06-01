@@ -104,6 +104,9 @@ class Node:
         Returns:
             Node: Subnode reference.
         """
+        if "/" in subnode_name:
+            raise ValueError("subnode_name cannot contain \"/\"")
+
         subnode = Node()
         subnode.root = self.root
         subnode.parent = self
