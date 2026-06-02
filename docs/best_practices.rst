@@ -48,7 +48,7 @@ Bad:
 Beware of deadlocks
 -----------------------
 
-Do not attempt operations on the same node while iterating over its subnodes. It will result in a deadlock.
+Do not attempt operations on a node while iterating over its subnodes. It may result in a deadlock depending on implementation. Think about it like writing to a file you're actively reading.
 
 Do not do this:
 
@@ -56,6 +56,18 @@ Do not do this:
 
    async for subnode in my_node.list_subnodes():
       await my_node.set_value("Evil and intimidating deadlock!!")
+
+If you *must* set a node's value, do something like this instead:
+
+.. code-block:: python
+   import asyncio
+
+   async for subnode in my_node.list_subnodes():
+      set_task = my_node.set_value("This will not deadlock as it will wait for the lock to release without blocking the main thread.")
+
+      asyncio.create_task(set_task) # This will fix the deadlock but the set operation may be arbitrarily delayed
+
+   await set_task # Optionally wait for the task to finish after the script
 
 Back up your data!
 ----------------------
