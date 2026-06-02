@@ -302,13 +302,31 @@ class FileStoreHook(Hook):
 
     def __init__(self, dir: str, locks_count: int = 10000) -> None:
         self.dir = pathlib.Path(dir).absolute()
-        self.locks = [asyncio.Lock() for _ in range(locks_count)]
+        self.locks = {}
+        self.locklock = asyncio.Lock()
+        self.locks_count = locks_count
 
     def __repr__(self):
         return f"FileStoreHook(dir='{self.dir}')"
 
     async def get_directory_lock(self, directory: str) -> asyncio.Lock:
-        return self.locks[hash(directory) % len(self.locks)]
+        async with self.locklock:
+            lock = self.locks.pop(directory, None)
+
+            if not lock:
+                lock = asyncio.Lock()
+
+            while len(self.locks) > self.locks_count:
+                lock_name = next(iter(self.locks.keys()))
+                
+                if self.locks[lock_name].locked():
+                    break
+
+                self.locks.pop(lock_name)  
+
+            self.locks[directory] = lock
+
+            return lock
 
     async def get_path_directory(self, path: str, file: str = "") -> str:
         parts = (
