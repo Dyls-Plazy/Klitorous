@@ -309,9 +309,9 @@ class FileStoreHook(Hook):
     def __repr__(self):
         return f"FileStoreHook(dir='{self.dir}')"
 
-    async def get_directory_lock(self, directory: str) -> asyncio.Lock:
+    async def get_directory_lock(self, directory: str, area: str="generic") -> asyncio.Lock:
         async with self.locklock:
-            lock = self.locks.pop(directory, None)
+            lock = self.locks.pop(f"_{area}{directory}", None)
 
             if not lock:
                 lock = asyncio.Lock()
@@ -365,7 +365,7 @@ class FileStoreHook(Hook):
     ) -> AsyncIterator[str]:
         directory = await self.get_path_directory(path)
 
-        async with await self.get_directory_lock(path):
+        async with await self.get_directory_lock(path, area="list"):
             if not os.path.isdir(directory):
                 return
 
