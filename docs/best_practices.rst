@@ -45,30 +45,32 @@ Bad:
 
    await db.get_subnode("users_alice_v2_final")
 
-Beware of deadlocks
+Be careful with locks
 -----------------------
 
-Do not attempt operations on a node while iterating over its subnodes. It may result in a deadlock depending on implementation. Think about it like writing to a file you're actively reading.
-
-Do not do this:
+Keep in mind that locks are not guaranteed to be persistent.
 
 .. code-block:: python
 
-   async for subnode in my_node.list_subnodes():
-      await my_node.set_value("Evil and intimidating deadlock!!")
-
-If you *must* set a node's value, do something like this instead:
-
-.. code-block:: python
-   
    import asyncio
 
-   async for subnode in my_node.list_subnodes():
-      set_task = my_node.set_value("This will not deadlock as it will wait for the lock to release without blocking the main thread.")
+   lock = await subnode.get_lock()
 
-      asyncio.create_task(set_task) # This will fix the deadlock but the set operation may be arbitrarily delayed
+   asyncio.sleep(60)
 
-   await set_task # Optionally wait for the task to finish after the script
+   later_lock = await subnode.get_lock() # lock and later_lock are not guaranteed to be the same lock
+
+You must call subnode.get_lock() every time you need to aquire a lock. The only guarantee is that one task can hold the lock at a time.
+
+.. code-block:: python
+
+   import asyncio
+
+   async def dangerous_function(value):
+      async with (await subnode.get_lock()):
+         await subnode.set_value(value)
+
+   await asyncio.gather(dangerous_function("a"), dangerous_function("b"))
 
 Back up your data!
 ----------------------
