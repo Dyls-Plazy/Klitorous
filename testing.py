@@ -3,7 +3,7 @@ import asyncio
 import keldb
 
 # Create a default KelDB database
-database = keldb.KelDB(keldb.MemoryStoreHook())
+database = keldb.KelDB(keldb.FileStoreHook("testdb"))
 
 async def main():
     global database
@@ -63,6 +63,6 @@ async def main():
 
     async with (await direct_reference.get_lock()):
         print("I have gotten a lock!")
-        print(direct_reference.root.locks)
+        print(direct_reference.root.locksystem.locks)
 
 asyncio.run(main())

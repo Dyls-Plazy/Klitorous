@@ -15,11 +15,11 @@ Core Components:
 from __future__ import annotations
 
 from typing import Any, AsyncIterator, Optional, IO
+from .locking import *
 import orjson as json
 import aiofiles
 import asyncio
 import pathlib
-import secrets
 import base64
 import shutil
 import os
@@ -232,7 +232,7 @@ class MemoryStoreHook:
     """
 
     def __init__(self):
-        self.lock = asyncio.Lock()
+        self.locksystem = SingleLockSystem()
         self.data = {"subnodes": {}, "exists": True}
 
     def __repr__(self):
@@ -254,20 +254,19 @@ class MemoryStoreHook:
         return subnode
 
     async def get_path_value(self, path: str, cached: bool = False) -> Any:
-        async with self.lock:
+        async with (await self.locksystem._get_path_lock(path)):
             subnode = await (self.get_path_dict(path))
 
             return subnode.get("value")
 
     async def set_path_value(self, path: str, value: Any, cached: bool = False) -> Any:
-        async with self.lock:
+        async with (await self.locksystem._get_path_lock(path)):
             subnode = await (self.get_path_dict(path, create=True))
 
             subnode["value"] = value
 
     async def list_path_subpaths(self, path: str, cached: bool = False) -> tuple[str]:
-
-        async with self.lock:
+        async with (await self.locksystem._get_path_lock(path, "list")):
             full_list = (
                 subnode_name
                 for subnode_name, subnode in (await self.get_path_dict(path))[
@@ -285,7 +284,7 @@ class MemoryStoreHook:
     async def delete_path(self, path: str, cached: bool = False) -> None:
         path_tuple = tuple(x for x in path.split("/") if x)
 
-        async with self.lock:
+        async with (await self.locksystem._get_path_lock(path)):
             (await self.get_path_dict("/".join(path_tuple[:-1])))["subnodes"].pop(
                 path_tuple[-1]
             )
@@ -305,31 +304,10 @@ class FileStoreHook(Hook):
 
     def __init__(self, dir: str, locks_count: int = 10000) -> None:
         self.dir = pathlib.Path(dir).absolute()
-        self.locks = {}
-        self.locklock = asyncio.Lock()
-        self.locks_count = locks_count
+        self.locksystem = BasicLockSystem(locks_count=locks_count)
 
     def __repr__(self):
         return f"FileStoreHook(dir='{self.dir}')"
-
-    async def get_directory_lock(self, directory: str, area: str="generic") -> asyncio.Lock:
-        async with self.locklock:
-            lock = self.locks.pop(f"_{area}{directory}", None)
-
-            if not lock:
-                lock = asyncio.Lock()
-
-            while len(self.locks) > self.locks_count:
-                lock_name = next(iter(self.locks.keys()))
-                
-                if self.locks[lock_name].locked():
-                    break
-
-                self.locks.pop(lock_name)  
-
-            self.locks[directory] = lock
-
-            return lock
 
     async def get_path_directory(self, path: str, file: str = "") -> str:
         parts = (
@@ -346,7 +324,7 @@ class FileStoreHook(Hook):
     async def get_path_value(self, path: str, cached: bool = False) -> Any:
         file_path = await self.get_path_directory(path, "value.json")
 
-        async with await self.get_directory_lock(path):
+        async with (await self.locksystem._get_path_lock(path)):
             if not os.path.isfile(file_path):
                 return None
 
@@ -356,7 +334,7 @@ class FileStoreHook(Hook):
     async def set_path_value(self, path: str, value: Any, cached: bool = False) -> None:
         directory = await self.get_path_directory(path)
 
-        async with await self.get_directory_lock(path):
+        async with (await self.locksystem._get_path_lock(path)):
             os.makedirs(directory, exist_ok=True)
 
             file_path = await self.get_path_directory(path, "value.json")
@@ -368,7 +346,7 @@ class FileStoreHook(Hook):
     ) -> AsyncIterator[str]:
         directory = await self.get_path_directory(path)
 
-        async with await self.get_directory_lock(path, area="list"):
+        async with (await self.locksystem._get_path_lock(path, area="list")):
             if not os.path.isdir(directory):
                 return
 
@@ -383,13 +361,13 @@ class FileStoreHook(Hook):
     async def check_path_exists(self, path: str, cached: bool = False) -> bool:
         directory = await self.get_path_directory(path)
 
-        async with await self.get_directory_lock(path):
+        async with (await self.locksystem._get_path_lock(path)):
             return os.path.isdir(directory)
 
     async def delete_path(self, path: str, cached: bool = False) -> None:
         directory = await self.get_path_directory(path)
 
-        async with await self.get_directory_lock(path):
+        async with (await self.locksystem._get_path_lock(path)):
             shutil.rmtree(directory, ignore_errors=True)
 
 
@@ -411,9 +389,7 @@ class KelDB(Node):
         self.hook = hook
         self.cache_enabled = True
 
-        self.locks = {}
-        self.locklock = asyncio.Lock()
-        self.locks_count = locks_count
+        self.locksystem = BasicLockSystem(locks_count=locks_count)
 
     def __repr__(self):
         return f"KelDB(hook={self.hook})"
@@ -499,20 +475,4 @@ class KelDB(Node):
                 continue
     
     async def _get_path_lock(self, directory: str, area: str="generic") -> asyncio.Lock:
-        async with self.locklock:
-            lock = self.locks.pop(f"_{area}{directory}", None)
-
-            if not lock:
-                lock = asyncio.Lock()
-
-            while len(self.locks) > self.locks_count:
-                lock_name = next(iter(self.locks.keys()))
-                
-                if self.locks[lock_name].locked():
-                    break
-
-                self.locks.pop(lock_name)  
-
-            self.locks[directory] = lock
-
-            return lock
+        return await self.locksystem._get_path_lock(directory, area)
