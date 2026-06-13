@@ -1,12 +1,6 @@
 import asyncio
 
 
-class LockSystem:
-    """Base interface for lock management systems."""
-
-    pass
-
-
 class DummyLock(asyncio.Lock):
     """
     No-op lock implementation.
@@ -48,6 +42,9 @@ class DummyLock(asyncio.Lock):
         """
         return False
 
+class LockSystem:
+    """Base interface for lock management systems."""
+    pass
 
 class DummyLockSystem(LockSystem):
     """

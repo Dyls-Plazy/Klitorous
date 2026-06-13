@@ -25,6 +25,9 @@ All hooks must implement the following methods:
 .. code-block:: python
 
     class MyHook(Hook):
+        async def __init__(self):
+            self.locksystem = None # Always define the locksystem property and ensure it can be changed dynamically
+
         async def get_path_value(self, path, cached=False):
             pass # Return a JSON-serializable object, or None if it doesn't exist
 
