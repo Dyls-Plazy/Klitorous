@@ -1,9 +1,10 @@
+from keldb.hooks import *
 from io import BytesIO
 import asyncio
 import keldb
 
 # Create a default KelDB database
-database = keldb.KelDB(keldb.FileStoreHook("testdb"))
+database = keldb.KelDB(keldb.MemoryStoreHook())
 
 async def main():
     global database
