@@ -83,6 +83,8 @@ A simple and widely used guideline is the **3-2-1 rule**:
 * **2 different storage types** - for example SSD + external drive or disk + cloud
 * **1 off-site copy** - store one backup in a different physical location
 
-This reduces the risk of losing all your data from hardware failure, accidents, or disasters.
+This reduces the risk of losing data from hardware failure, accidents, or disasters.
+
+And don't just **have** them, **integrate** them. Ensure your team knows how your backup system works, how to restore from it, and how long recovery will take. Make sure it works, because a broken backup system is no backup system.
 
 Don't risk data you can't afford to lose! `You aren't GitLab! <https://about.gitlab.com/blog/gitlab-dot-com-database-incident/>`_
