@@ -2,9 +2,7 @@
 # Klitorous
 [![Latest PyPI package version](https://img.shields.io/pypi/v/klitorous.svg)](https://pypi.org/project/klitorous) [![Latest Read The Docs](https://readthedocs.org/projects/klitorous/badge/?version=stable)](https://klitorous.readthedocs.io/en/stable/)
 
-Klitorous is a simple node-based database for asyncio applications.
-
-Klitorous is organised into **nodes**. A node is a container that can hold a value and/or other **subnodes**. The database itself is the root node, and every piece of data is a subnode of it.
+Klitorous is a fork of KelDB for the Dyl's Plazy
 
 ## Installation
 Install from PyPi:
