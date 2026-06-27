@@ -14,4 +14,3 @@ dependencies = ["aiofiles>=22.1.0", "orjson>=2.0.0"]
 
 [project.urls]
 source = "https://github.com/Dyls-Plazy/keldb/"
-documentation = "https://klitorous.readthedocs.io/en/stable/"
