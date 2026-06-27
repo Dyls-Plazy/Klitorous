@@ -1,31 +1,31 @@
 
-# KelDB
-[![Latest PyPI package version](https://img.shields.io/pypi/v/keldb.svg)](https://pypi.org/project/keldb) [![Latest Read The Docs](https://readthedocs.org/projects/keldb/badge/?version=stable)](https://keldb.readthedocs.io/en/stable/)
+# Klitorous
+[![Latest PyPI package version](https://img.shields.io/pypi/v/klitorous.svg)](https://pypi.org/project/klitorous) [![Latest Read The Docs](https://readthedocs.org/projects/klitorous/badge/?version=stable)](https://klitorous.readthedocs.io/en/stable/)
 
-KelDB is a simple node-based database for asyncio applications.
+Klitorous is a simple node-based database for asyncio applications.
 
-KelDB is organised into **nodes**. A node is a container that can hold a value and/or other **subnodes**. The database itself is the root node, and every piece of data is a subnode of it.
+Klitorous is organised into **nodes**. A node is a container that can hold a value and/or other **subnodes**. The database itself is the root node, and every piece of data is a subnode of it.
 
 ## Installation
 Install from PyPi:
 
-    pip install -U keldb
+    pip install -U klitorous
 
 Or install from source
 
-    git clone https://github.com/TriangularDev/keldb.git
-    cd keldb
+    git clone https://github.com/Dyls-Plazy/klitorous.git
+    cd klitorous
     pip install -r requirements.txt
     python3 -m pip install -U . --force-reinstall
 
 ## Usage
-KelDB is quite flexible. There's only a few commands to learn.
+Klitorous is quite flexible. There's only a few commands to learn.
 
     import asyncio
-    import keldb
+    import klitorous
     
-    # Create a default KelDB database (or load an existing database)
-    database = keldb.KelDB(keldb.FileStoreHook("./testdb/"))
+    # Create a default Klitorous database (or load an existing database)
+    database = klitorous.Klitorous(klitorous.FileStoreHook("./testdb/"))
     
     async def main():
         # Create subnodes (lazy creation - no actual subnodes are created yet)
