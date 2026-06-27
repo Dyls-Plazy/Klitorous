@@ -1,14 +1,14 @@
 Best Practices
 ==============
 
-This page details the recommended usage patterns for KelDB.
+This page details the recommended usage patterns for Klitorous.
 
 Use small, focused nodes
 ------------------------
 
 When your use case allows it, try to split nodes into smaller subnodes whenever possible, within reason.
 
-KelDB is more than capable of storing large objects, but less is more in this case.
+Klitorous is more than capable of storing large objects, but less is more in this case.
 
 Good:
 

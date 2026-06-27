@@ -1,7 +1,7 @@
-KelDB Locks
+Klitorous Locks
 ============
 
-.. automodule:: keldb.locking
+.. automodule:: klitorous.locking
    :members:
    :show-inheritance:
    :undoc-members:

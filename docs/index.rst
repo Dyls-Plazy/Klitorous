@@ -1,7 +1,7 @@
-Welcome to KelDB documentation!
+Welcome to Klitorous documentation!
 ===============================
 
-KelDB is an asynchronous hierarchical key-value database built around
+Klitorous is an asynchronous hierarchical key-value database built around
 a tree of nodes with pluggable storage backends.
 
 .. toctree::

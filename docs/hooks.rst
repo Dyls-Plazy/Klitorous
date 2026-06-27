@@ -1,19 +1,19 @@
 Creating a Custom Hook
 ======================
 
-A ``Hook`` is the storage backend interface used by KelDB. It defines how data is stored, retrieved, listed, and deleted.
+A ``Hook`` is the storage backend interface used by Klitorous. It defines how data is stored, retrieved, listed, and deleted.
 
-To extend KelDB, you implement a subclass of ``Hook`` and provide your own storage logic (database, cloud storage, in-memory store, etc.).
+To extend Klitorous, you implement a subclass of ``Hook`` and provide your own storage logic (database, cloud storage, in-memory store, etc.).
 
 Why Hooks exist
 ---------------
 
 Hooks separate:
 
-* **KelDB logic** (tree structure, nodes, paths)
+* **Klitorous logic** (tree structure, nodes, paths)
 * **Storage logic** (filesystem, memory, remote APIs, databases)
 
-This makes KelDB fully hot-pluggable, allowing you to connect the simplicity of KelDB to whatever your use case requires.
+This makes Klitorous fully hot-pluggable, allowing you to connect the simplicity of Klitorous to whatever your use case requires.
 
 However, you bear the responsibility of storage, thread-safety, caching, and integration.
 
@@ -48,10 +48,10 @@ Your hook should never throw an exception unless an internal failure occurs, suc
 Using your hook
 ---------------
 
-Once implemented, pass it into KelDB:
+Once implemented, pass it into Klitorous:
 
 .. code-block:: python
 
-    from keldb import KelDB
+    from klitorous import KelDB
 
     db = KelDB(MyHook())

@@ -1,21 +1,21 @@
 Quickstart
 ==========
 
-KelDB lets you store data in a tree-like structure using ""nodes."
+Klitorous lets you store data in a tree-like structure using ""nodes."
 
 Installation
 ------------
 
 .. code-block:: bash
 
-   pip install keldb
+   pip install klitorous
 
 Basic Usage
 -----------
 
 .. code-block:: python
 
-   from keldb import KelDB, FileStoreHook
+   from klitorous import KelDB, FileStoreHook
 
    db = KelDB(FileStoreHook("./data"))
 

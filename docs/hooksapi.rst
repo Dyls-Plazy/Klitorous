@@ -1,7 +1,7 @@
 KelDB Hooks
 ============
 
-.. automodule:: keldb.hooks
+.. automodule:: klitorous.hooks
    :members:
    :show-inheritance:
    :undoc-members:

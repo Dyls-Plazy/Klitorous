@@ -1,7 +1,7 @@
-KelDB
+Klitorous
 ============
 
-.. automodule:: keldb
+.. automodule:: klitorous
    :members:
    :show-inheritance:
    :undoc-members:

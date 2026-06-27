@@ -5,13 +5,13 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "keldb"
 version = "0.2.7"
-description = "KelDB is a simple node-based database for asyncio applications."
-authors = [{ name="TriangularDev", email="triangle@dylsplazy.com" }]
+description = "Klitorous is a simple node-based database for asyncio applications."
+authors = [{ name="TriangularDev", email="triangle@dylsplazy.com" },  { name="Dylsshop", email="dylsshop@dylsplazy.com" }]
 readme = "README.md"
 requires-python = ">=3.7"
 
 dependencies = ["aiofiles>=22.1.0", "orjson>=2.0.0"]
 
 [project.urls]
-source = "https://github.com/TriangularDev/keldb/"
-documentation = "https://keldb.readthedocs.io/en/stable/"
+source = "https://github.com/Dyls-Plazy/keldb/"
+documentation = "https://klitorous.readthedocs.io/en/stable/"

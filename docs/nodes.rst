@@ -1,7 +1,7 @@
 Working with Nodes
 ===================
 
-Nodes are the core abstraction in KelDB.
+Nodes are the core abstraction in Klitorous.
 
 What is a Node?
 ---------------
@@ -103,15 +103,15 @@ Now only one task can execute the critical section at a time.
 Thread Safety and Hooks
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Node locks are **not** a replacement for KelDB's internal thread-safety guarantees.
+Node locks are **not** a replacement for Klitorous's internal thread-safety guarantees.
 
-KelDB operations are already designed to be safe to use concurrently. You do **not** need to manually acquire node locks simply to make database access thread-safe.
+Klitorous operations are already designed to be safe to use concurrently. You do **not** need to manually acquire node locks simply to make database access thread-safe.
 
 Instead, node locks exist to help users coordinate their own higher-level application logic when multiple operations must be treated as a single atomic sequence.
 
 Likewise, node locks should not be relied upon to make hooks thread-safe. Hook implementations must still be written to handle concurrent execution correctly according to the hook system's requirements.
 
-Node locks are entirely advisory. KelDB does not automatically enforce them, nor does it regulate database operations based on whether a node's lock is currently held. Any task may still read from or write to a node regardless of the lock state.
+Node locks are entirely advisory. Klitorous does not automatically enforce them, nor does it regulate database operations based on whether a node's lock is currently held. Any task may still read from or write to a node regardless of the lock state.
 
 Disabling Hook Locks
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -120,7 +120,7 @@ If you are **confident you can handle locks yourself**, you can disable hook loc
 
 .. code-block:: python
 
-   from keldb.locking import DummyLockSystem
+   from klitorous.locking import DummyLockSystem
 
    somehook.locksystem = DummyLockSystem()
 
